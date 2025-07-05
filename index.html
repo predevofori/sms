@@ -1,0 +1,2915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShiftMaster - Interactive Tutorial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a89dc;
+            --secondary-color: #5d9cec;
+            --accent-color: #3bafda;
+            --light-color: #f5f7fa;
+            --dark-color: #434a54;
+            --success-color: #8cc152;
+            --warning-color: #f6bb42;
+            --danger-color: #e9573f;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --sidebar-width: 300px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark-color);
+            overflow-x: hidden;
+        }
+
+        /* Voice Reader Controls */
+        .voice-reader-container {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .voice-reader-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .voice-reader-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .voice-reader-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .voice-reader-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .voice-reader-btn.active {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .voice-reader-speed {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .voice-reader-speed select {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 3px 5px;
+            border-radius: 4px;
+        }
+
+        .voice-reader-speed select option {
+            color: var(--dark-color);
+            background: white;
+        }
+
+        /* Tutorial Container */
+        .tutorial-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 50px; /* Added to account for voice reader */
+        }
+
+        /* Sidebar Navigation */
+        .tutorial-sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: white;
+            position: fixed;
+            left: 0;
+            top: 50px; /* Adjusted for voice reader */
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-header h2 {
+            color: var(--primary-color);
+            font-size: 22px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            padding: 10px 20px;
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            padding: 12px 20px 12px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(74, 137, 220, 0.1);
+        }
+
+        .menu-item.active {
+            background-color: rgba(74, 137, 220, 0.1);
+            border-left: 3px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .tutorial-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            padding-top: calc(var(--header-height) + 30px);
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Header */
+        .tutorial-header {
+            position: fixed;
+            top: 50px; /* Adjusted for voice reader */
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 90;
+            transition: all 0.3s ease;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(74, 137, 220, 0.1);
+            color: var(--primary-color);
+            border: none;
+        }
+
+        .control-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Tutorial Steps */
+        .tutorial-step {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tutorial-step.active {
+            display: block;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .step-content {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .step-content p {
+            margin-bottom: 15px;
+        }
+
+        .step-content ul, .step-content ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        .step-content li {
+            margin-bottom: 8px;
+        }
+
+        .step-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a6fc8;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: rgba(74, 137, 220, 0.1);
+        }
+
+        .btn-disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Interactive Elements */
+        .interactive-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px dashed #ddd;
+            position: relative;
+        }
+
+        .demo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .demo-title {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .demo-reset {
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .demo-content {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .demo-placeholder {
+            text-align: center;
+            color: #888;
+            padding: 30px;
+        }
+
+        .demo-placeholder i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        .simulated-app {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .simulated-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .simulated-nav {
+            display: flex;
+            background: #f0f0f0;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .simulated-nav-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .simulated-nav-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .simulated-content {
+            padding: 20px;
+            background: white;
+            min-height: 300px;
+        }
+
+        .simulated-btn {
+            padding: 8px 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .simulated-card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #eee;
+        }
+
+        /* Video Placeholder */
+        .video-placeholder {
+            background: #333;
+            border-radius: 8px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-placeholder i {
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+
+        /* Progress Tracker */
+        .progress-tracker {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            z-index: 80;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .progress-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) var(--progress, #eee var(--progress));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .progress-circle::before {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .progress-percent {
+            position: relative;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Speech Controls */
+        .speech-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speech-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .speech-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .speech-btn.stop {
+            background: var(--danger-color);
+        }
+
+        .voice-select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            min-width: 150px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .tutorial-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .tutorial-sidebar.active {
+                transform: translateX(0);
+            }
+
+            .tutorial-content {
+                margin-left: 0;
+            }
+
+            .tutorial-header {
+                left: 0;
+            }
+
+            .sidebar-toggle {
+                display: flex !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tutorial-content {
+                padding: 20px;
+                padding-top: calc(var(--header-height) + 20px);
+            }
+
+            .tutorial-step {
+                padding: 20px;
+            }
+
+            .step-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .progress-tracker, .speech-controls {
+                bottom: 15px;
+                right: 15px;
+                left: auto;
+                transform: scale(0.9);
+            }
+
+            .voice-reader-container {
+                flex-direction: column;
+                padding: 8px;
+                gap: 8px;
+            }
+
+            .voice-reader-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(74, 137, 220, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            border-bottom: 1px dotted #666;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Sidebar Toggle */
+        .sidebar-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(74, 137, 220, 0.1);
+            color: var(--primary-color);
+            border: none;
+        }
+
+        /* Quiz Component */
+        .quiz-container {
+            margin: 30px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .quiz-question {
+            padding: 20px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+
+        .quiz-options {
+            padding: 15px;
+            background: white;
+        }
+
+        .quiz-option {
+            padding: 10px 15px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background: #f0f0f0;
+        }
+
+        .quiz-option.selected {
+            background: rgba(74, 137, 220, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .quiz-option.correct {
+            background: rgba(140, 193, 82, 0.1);
+            border-color: var(--success-color);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(233, 87, 63, 0.1);
+            border-color: var(--danger-color);
+        }
+
+        .quiz-feedback {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-submit {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Completion Screen */
+        .completion-screen {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .completion-icon {
+            font-size: 80px;
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+
+        .completion-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .completion-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Hotspot */
+        .hotspot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(233, 87, 63, 0.7);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            animation: pulse 2s infinite;
+        }
+
+        .hotspot-tooltip {
+            position: absolute;
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            width: 200px;
+            z-index: 11;
+            display: none;
+        }
+
+        .hotspot:hover .hotspot-tooltip {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(233, 87, 63, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(233, 87, 63, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(233, 87, 63, 0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Voice Reader Controls -->
+    <div class="voice-reader-container">
+        <div class="voice-reader-title">
+            <i class="fas fa-volume-up"></i> Voice Reader
+        </div>
+        <div class="voice-reader-controls">
+            <button class="voice-reader-btn" id="voice-reader-play">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="voice-reader-btn" id="voice-reader-pause">
+                <i class="fas fa-pause"></i>
+            </button>
+            <button class="voice-reader-btn" id="voice-reader-stop">
+                <i class="fas fa-stop"></i>
+            </button>
+            <div class="voice-reader-speed">
+                <span>Speed:</span>
+                <select id="voice-reader-speed">
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="tutorial-container">
+        <!-- Sidebar Navigation -->
+        <div class="tutorial-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>ShiftMaster </h2>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="section-title">Getting Started</div>
+                    <div class="menu-item active" data-step="welcome">
+                        <i class="fas fa-home"></i> Welcome
+                    </div>
+                    <div class="menu-item" data-step="overview">
+                        <i class="fas fa-binoculars"></i> System Overview
+                    </div>
+                    <div class="menu-item" data-step="navigation">
+                        <i class="fas fa-compass"></i> Navigation
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <div class="section-title">Core Features</div>
+                    <div class="menu-item" data-step="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </div>
+                    <div class="menu-item" data-step="shift-management">
+                        <i class="fas fa-calendar-alt"></i> Shift Management
+                    </div>
+                    <div class="menu-item" data-step="employee-management">
+                        <i class="fas fa-users"></i> Employee Management
+                    </div>
+                    <div class="menu-item" data-step="team-management">
+                        <i class="fas fa-layer-group"></i> Team Management
+                    </div>
+                    <div class="menu-item" data-step="assignment">
+                        <i class="fas fa-user-plus"></i> Assignments
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <div class="section-title">Advanced Features</div>
+                    <div class="menu-item" data-step="auto-generation">
+                        <i class="fas fa-robot"></i> Auto Generation
+                    </div>
+                    <div class="menu-item" data-step="reports">
+                        <i class="fas fa-chart-bar"></i> Reports & Analysis
+                    </div>
+                    <div class="menu-item" data-step="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <div class="section-title">Final Steps</div>
+                    <div class="menu-item" data-step="best-practices">
+                        <i class="fas fa-lightbulb"></i> Best Practices
+                    </div>
+                    <div class="menu-item" data-step="quiz">
+                        <i class="fas fa-question-circle"></i> Knowledge Check
+                    </div>
+                    <div class="menu-item" data-step="completion">
+                        <i class="fas fa-certificate"></i> Completion
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="tutorial-content">
+            <!-- Header -->
+            <div class="tutorial-header">
+                <button class="sidebar-toggle" id="mobile-sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title" id="step-title">Welcome to ShiftMaster.</div>
+                <div class="header-controls">
+                    <button class="control-btn" id="prev-step" title="Previous Step">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="control-btn" id="next-step" title="Next Step">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Tutorial Steps -->
+            <!-- Welcome Step -->
+            <div class="tutorial-step active" id="welcome-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">1</span>
+                        <h2 class="step-title">Welcome to ShiftMaster.</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>Welcome to the interactive tutorial for ShiftMaster, your comprehensive solution for efficient shift and workforce management. This tutorial will guide you through all the key features and functionalities of the application.</p>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-title">Before You Begin</div>
+                        <p>This tutorial is designed to be completed in approximately 30-45 minutes. You can navigate through the steps using the sidebar or the navigation buttons at the bottom of each section.</p>
+                    </div>
+                    
+                    <h3>What You'll Learn</h3>
+                    <ul>
+                        <li>How to navigate the ShiftMaster interface.</li>
+                        <li>Creating and managing employee schedules.</li>
+                        <li>Building and organizing teams.</li>
+                        <li>Automating shift assignments.</li>
+                        <li>Generating reports and analyzing data.</li>
+                        <li>Customizing system settings.</li>
+                    </ul>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Quick Demo</div>
+                        </div>
+                        <div class="demo-content">
+                            <div class="simulated-app">
+                                <div class="simulated-header">
+                                    ShiftMaster
+                                </div>
+                                <div class="simulated-nav">
+                                    <div class="simulated-nav-item active">Dashboard</div>
+                                    <div class="simulated-nav-item">Shifts</div>
+                                    <div class="simulated-nav-item">Employees</div>
+                                    <div class="simulated-nav-item">Reports</div>
+                                </div>
+                                <div class="simulated-content">
+                                    <p>Welcome to your shift management dashboard. Here you can see an overview of your workforce and schedules.</p>
+                                    <button class="simulated-btn" id="demo-start-btn">Get Started</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="video-placeholder">
+                        <!--<i class="fas fa-video"></i> -->
+                        <!-- Video embed will go here -->
+                       <video width="900" height="400" controls>
+  <source src="intro.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" disabled>
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="welcome-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- System Overview Step -->
+            <div class="tutorial-step" id="overview-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">2</span>
+                        <h2 class="step-title">System Overview</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>ShiftMaster is designed to streamline your workforce management process with intuitive tools for scheduling, team building, and reporting.</p>
+                    
+                    <h3>Key Components</h3>
+                    <div class="simulated-app" style="margin: 20px 0;">
+                        <div class="simulated-header">
+                            ShiftMaster  - Main Components
+                        </div>
+                        <div class="simulated-content">
+                            <div class="simulated-card">
+                                <h4>Dashboard</h4>
+                                <p>Your central hub showing key metrics and quick access to all features.</p>
+                            </div>
+                            <div class="simulated-card">
+                                <h4>Shift Management</h4>
+                                <p>Create and manage shifts for your workforce with date and time specifications.</p>
+                            </div>
+                            <div class="simulated-card">
+                                <h4>Employee Management</h4>
+                                <p>Maintain a database of all employees with their roles and contact information.</p>
+                            </div>
+                            <div class="simulated-card">
+                                <h4>Team Management</h4>
+                                <p>Organize employees into functional teams for efficient shift assignments.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-title">System Requirements</div>
+                        <p>ShiftMaster  Supports Windows And Mac. With an integration on DNATA'S HHD's via and Andriod App. For optimal performance, we recommend:</p>
+                        <ul>
+                            <li>Windows And Mac</li>
+                            <li>Minimum screen resolution of 1280x720</li>
+                            <li>Stable internet connection for cloud features</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Data Structure</h3>
+                    <p>The system organizes information in a hierarchical structure:</p>
+                    <ol>
+                        <li><strong>Employers</strong> - The organizations or companies.</li>
+                        <li><strong>Employees</strong> - Individual workers with specific roles.</li>
+                        <li><strong>Shifts</strong> - Time periods for work assignments.</li>
+                        <li><strong>Teams</strong> - Groups of employees assigned to specific shifts.</li>
+                        <li><strong>Assignments</strong> - Individual work allocations.</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Explore the Structure</div>
+                        </div>
+                        <div class="demo-content">
+                            <div id="structure-diagram" style="width: 100%; height: 400px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; color: #888;">
+                                <img height="400px" width="900px"
+  id="animated-logo" 
+  src="logo.jpg" 
+  alt="A beautiful landscape"
+>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="overview-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="overview-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Navigation Step -->
+            <div class="tutorial-step" id="navigation-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">3</span>
+                        <h2 class="step-title">Application Navigation</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>Understanding the navigation structure is key to efficiently using ShiftMaster . The interface is divided into several main areas.</p>
+                    
+                    <h3>Main Navigation</h3>
+                    <div class="simulated-app" style="margin: 20px 0;">
+                        <div class="simulated-header">
+                            ShiftMaster  - Navigation
+                        </div>
+                        <div class="simulated-content">
+                            <div style="display: flex; min-height: 400px;">
+                                <!-- Simulated Sidebar -->
+                                <div style="width: 250px; background: #f5f7fa; border-right: 1px solid #ddd; padding: 15px 0;">
+                                    <div style="padding: 15px; font-weight: 600; border-bottom: 1px solid #eee;">Main Menu</div>
+                                    <div style="padding: 10px 15px; background: rgba(74, 137, 220, 0.1); color: var(--primary-color); border-left: 3px solid var(--primary-color);">
+                                        <i class="fas fa-tachometer-alt" style="margin-right: 10px;"></i> Dashboard
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        <i class="fas fa-calendar-alt" style="margin-right: 10px;"></i> Shift Schedule
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        <i class="fas fa-user-plus" style="margin-right: 10px;"></i> Assign
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        <i class="fas fa-users" style="margin-right: 10px;"></i> Employees
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        <i class="fas fa-layer-group" style="margin-right: 10px;"></i> Teams
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        <i class="fas fa-robot" style="margin-right: 10px;"></i> Automation
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        <i class="fas fa-cog" style="margin-right: 10px;"></i> Settings
+                                    </div>
+                                </div>
+                                
+                                <!-- Simulated Content -->
+                                <div style="flex: 1; padding: 20px; position: relative;">
+                                    <div class="hotspot" style="top: 20px; left: 20px;">
+                                        <div class="hotspot-tooltip" style="top: -80px; left: 30px;">
+                                            <strong>Date Selector</strong><br>
+                                            Change the date to view or edit schedules
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="hotspot" style="top: 70px; right: 50px;">
+                                        <div class="hotspot-tooltip" style="top: -80px; right: 30px;">
+                                            <strong>Action Buttons</strong><br>
+                                            Add new items or perform bulk actions
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="hotspot" style="bottom: 100px; left: 50%;">
+                                        <div class="hotspot-tooltip" style="bottom: 40px; left: -90px;">
+                                            <strong>Content Area</strong><br>
+                                            Displays the main information for the selected section
+                                        </div>
+                                    </div>
+                                    
+                                    <h3 style="margin-top: 0;">Dashboard Overview</h3>
+                                    <p>This is your central hub showing key metrics and quick access to all features.</p>
+                                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;">
+                                        <div style="background: #f0f0f0; padding: 15px; border-radius: 8px;">
+                                            <div style="font-size: 12px; color: #666;">Total Employees</div>
+                                            <div style="font-size: 24px; font-weight: 600;">142</div>
+                                        </div>
+                                        <div style="background: #f0f0f0; padding: 15px; border-radius: 8px;">
+                                            <div style="font-size: 12px; color: #666;">Teams Today</div>
+                                            <div style="font-size: 24px; font-weight: 600;">18</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Key Navigation Tips</h3>
+                    <ul>
+                        <li>Use the <strong>sidebar menu</strong> to switch between different sections of the application</li>
+                        <li>The <strong>date picker</strong> at the top of most pages lets you view schedules for specific dates</li>
+                        <li><strong>Action buttons</strong> (usually with a "+" icon) allow you to add new items</li>
+                        <li>Most sections have <strong>filter options</strong> to help you find specific information</li>
+                    </ul>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Try It Yourself</div>
+                            <div class="demo-reset" id="reset-nav-demo">Reset</div>
+                        </div>
+                        <div class="demo-content">
+                            <div id="nav-demo-area" style="text-align: center;">
+                                <p>Click the buttons below to simulate navigation:</p>
+                                <div style="display: flex; justify-content: center; gap: 10px; margin: 20px 0;">
+                                    <button class="simulated-btn nav-demo-btn" data-section="dashboard">Dashboard</button>
+                                    <button class="simulated-btn nav-demo-btn" data-section="shifts">Shifts</button>
+                                    <button class="simulated-btn nav-demo-btn" data-section="employees">Employees</button>
+                                </div>
+                                <div id="nav-demo-content" style="min-height: 100px; padding: 20px; background: #f9f9f9; border-radius: 8px;">
+                                    Select a section to view simulated content
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="navigation-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="navigation-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Dashboard Step -->
+            <div class="tutorial-step" id="dashboard-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">4</span>
+                        <h2 class="step-title">Dashboard Overview</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>The Dashboard is your central hub for monitoring workforce management activities. It provides at-a-glance insights into your operations.</p>
+                    
+                    <h3>Key Dashboard Components</h3>
+                    <div class="simulated-app" style="margin: 20px 0;">
+                        <div class="simulated-header">
+                            ShiftMaster  - Dashboard
+                        </div>
+                        <div class="simulated-content">
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                                <div style="background: rgba(74, 137, 220, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                                    <div style="font-size: 12px; color: #666;">Total Employees</div>
+                                    <div style="font-size: 24px; font-weight: 600;">142</div>
+                                </div>
+                                <div style="background: rgba(140, 193, 82, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--success-color);">
+                                    <div style="font-size: 12px; color: #666;">Teams Today</div>
+                                    <div style="font-size: 24px; font-weight: 600;">18</div>
+                                </div>
+                                <div style="background: rgba(246, 187, 66, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--warning-color);">
+                                    <div style="font-size: 12px; color: #666;">Morning Shift</div>
+                                    <div style="font-size: 24px; font-weight: 600;">12</div>
+                                </div>
+                                <div style="background: rgba(233, 87, 63, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--danger-color);">
+                                    <div style="font-size: 12px; color: #666;">Night Shift</div>
+                                    <div style="font-size: 24px; font-weight: 600;">6</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                                <div style="flex: 1; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                                    <h4 style="margin-top: 0;">Recent Shifts</h4>
+                                    <div style="height: 200px; display: flex; align-items: center; justify-content: center; color: #888;">
+                                        <img height="200px" width="300px"
+  id="animated-logo" 
+  src="a1.jpg" 
+  alt="A beautiful landscape"
+>
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                                    <h4 style="margin-top: 0;">Team Distribution</h4>
+                                    <div style="height: 200px; display: flex; align-items: center; justify-content: center; color: #888;">
+                                        <img height="200px" width="300px"
+  id="animated-logo" 
+  src="a2.jpg" 
+  alt="A beautiful landscape"
+>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                                <h4 style="margin-top: 0;">Quick Actions</h4>
+                                <div style="display: flex; gap: 10px;">
+                                    <button class="simulated-btn">Add Shift</button>
+                                    <button class="simulated-btn">Create Team</button>
+                                    <button class="simulated-btn">Generate Report</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Understanding the Metrics</h3>
+                    <div class="highlight-box">
+                        <div class="highlight-title">Dashboard Metrics Explained</div>
+                        <ul>
+                            <li><strong>Total Employees:</strong> The current number of active employees in your system</li>
+                            <li><strong>Teams Today:</strong> Number of teams scheduled for the current day</li>
+                            <li><strong>Morning Shift:</strong> Teams working the morning shift (6:00 AM - 6:00 PM)</li>
+                            <li><strong>Night Shift:</strong> Teams working the night shift (6:00 PM - 6:00 AM)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="">
+                        <i class=""></i>
+                          <img height="300px" width="100%"
+  id="animated-logo" 
+  src="b1.jpg" 
+  alt="A beautiful landscape"
+>
+                    </div>
+                    
+                    <h3>Customizing Your Dashboard</h3>
+                    <p>You can customize which metrics appear on your dashboard:</p>
+                    <ol>
+                        <li>Navigate to Settings > Dashboard Preferences</li>
+                        <li>Select the metrics you want to display</li>
+                        <li>Arrange them in your preferred order</li>
+                        <li>Save your changes</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Dashboard Customization</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="text-align: center;">
+                                <p>Select which metrics to display:</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 20px 0;">
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" checked> Total Employees
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" checked> Teams Today
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" checked> Morning Shift
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" checked> Night Shift
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox"> Open Shifts
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox"> Unassigned Employees
+                                    </label>
+                                </div>
+                                <button class="simulated-btn">Save Preferences</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="dashboard-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="dashboard-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Shift Management Step -->
+            <div class="tutorial-step" id="shift-management-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">5</span>
+                        <h2 class="step-title">Shift Management</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>ShiftMaster  allows you to efficiently create and manage shifts for your workforce. This section covers all aspects of shift management.</p>
+                    
+                    <h3>Creating a New Shift</h3>
+                    <ol>
+                        <li>Navigate to the <strong>Shift Schedule</strong> section</li>
+                        <li>Select the desired date using the date picker</li>
+                        <li>Click the <strong>Add Team</strong> button</li>
+                        <li>Fill in the shift details:
+                            <ul>
+                                <li>Shift type (Morning or Night)</li>
+                                <li>Location (e.g., FG5, FG4)</li>
+                                <li>Area (e.g., Breakdown, Delivery)</li>
+                                <li>Team members (Staff, Porters, Forklift Operator)</li>
+                                <li>Optional supervisor</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save Team</strong> to create the shift</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Create a Shift</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 500px; margin: 0 auto;">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Shift Date</label>
+                                    <input type="date" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Shift Type</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>Morning (6:00 AM - 6:00 PM)</option>
+                                        <option>Night (6:00 PM - 6:00 AM)</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Location</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>FG5</option>
+                                        <option>FG4</option>
+                                        <option>FG</option>
+                                        <option>FG2</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Area</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>Breakdown</option>
+                                        <option>Delivery</option>
+                                        <option>Acceptance</option>
+                                        <option>Build up</option>
+                                    </select>
+                                </div>
+                                
+                                <button class="simulated-btn" style="width: 100%;">Add Team Members</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Viewing and Editing Shifts</h3>
+                    <p>To view or edit existing shifts:</p>
+                    <ol>
+                        <li>Navigate to the <strong>Shift Schedule</strong> section</li>
+                        <li>Select the date you want to view</li>
+                        <li>Click on a shift to view details</li>
+                        <li>Use the <strong>Edit</strong> button to make changes</li>
+                        <li>Click <strong>Save</strong> to update the shift</li>
+                    </ol>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-title">Shift Types</div>
+                        <p>ShiftMaster  supports two main shift types:</p>
+                        <ul>
+                            <li><strong>Morning Shift:</strong> 6:00 AM to 6:00 PM</li>
+                            <li><strong>Night Shift:</strong> 6:00 PM to 6:00 AM</li>
+                        </ul>
+                        <p>These can be customized in the Settings section if your organization uses different shift times.</p>
+                    </div>
+                    
+                    <div class="video-placeholder">
+                       
+                         <video width="900" height="400" controls>
+  <source src="hdd.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+                    </div>
+                    
+                    <h3>Best Practices for Shift Management Alongside HHD's</h3>
+                    <ul>
+                        <li>Break Schedule Notifications. When break starts and when break ends.</li>
+                        <li>Updates Staffs On Team Members Per Shift.</li>
+                        <li>A common chat Forum to collaborate with other employees </li>
+                        <li>A private chat option to connect and report issues and damages to Supervisors</li>
+                        <li>Announcement/alert Pop up notifications</li>
+                    </ul>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="shift-management-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="shift-management-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Employee Management Step -->
+            <div class="tutorial-step" id="employee-management-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">6</span>
+                        <h2 class="step-title">Employee Management</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>The Employee Management section allows you to maintain a complete database of all your workforce members, their roles, and contact information.</p>
+                    
+                    <h3>Adding a New Employee</h3>
+                    <ol>
+                        <li>Navigate to the <strong>Employees</strong> section</li>
+                        <li>Click the <strong>Add Employee</strong> button</li>
+                        <li>Fill in the employee details:
+                            <ul>
+                                <li>First and last name</li>
+                                <li>Employee ID (optional)</li>
+                                <li>Employer (select from dropdown)</li>
+                                <li>Role (Staff, Porter, Forklift Operator, or Supervisor)</li>
+                                <li>Email address (for notifications)</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save Employee</strong> to add to the system</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Add Employee Demo</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 500px; margin: 0 auto;">
+                                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                                    <div style="flex: 1;">
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">First Name</label>
+                                        <input type="text" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" value="John">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Last Name</label>
+                                        <input type="text" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" value="Smith">
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Employee ID</label>
+                                    <input type="text" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" value="JS0425">
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Employer</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>DNATA</option>
+                                        <option>Contractor A</option>
+                                        <option>Contractor B</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Role</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>Staff Member</option>
+                                        <option>Porter</option>
+                                        <option>Forklift Operator</option>
+                                        <option selected>Supervisor</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Email Address</label>
+                                    <input type="email" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" value="john.smith@example.com">
+                                </div>
+                                
+                                <button class="simulated-btn" style="width: 100%;">Save Employee</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Employee Roles Explained</h3>
+                    <div class="highlight-box">
+                        <div class="highlight-title">Role Definitions</div>
+                        <ul>
+                            <li><strong>Staff Member:</strong> General workforce with various responsibilities</li>
+                            <li><strong>Porter:</strong> Handles luggage and cargo movement (typically 2 per team)</li>
+                            <li><strong>Forklift Operator:</strong> Certified to operate forklift equipment (typically 1 per team)</li>
+                            <li><strong>Supervisor:</strong> Team leader with additional responsibilities (optional per team)</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Searching and Filtering Employees</h3>
+                    <p>You can easily find specific employees using:</p>
+                    <ul>
+                        <li><strong>Search bar:</strong> Find employees by name or ID</li>
+                        <li><strong>Role tabs:</strong> Filter by Staff, Porters, or Forklift Operators</li>
+                        <li><strong>Employer filter:</strong> View employees by employer</li>
+                    </ul>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Employee Search</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+                                <div style="position: relative; margin-bottom: 20px;">
+                                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888;"></i>
+                                    <input type="text" placeholder="Search employees..." style="width: 100%; padding: 10px 15px 10px 40px; border: 1px solid #ddd; border-radius: 8px;">
+                                </div>
+                                
+                                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                                    <div class="simulated-nav-item active">All</div>
+                                    <div class="simulated-nav-item">Staff</div>
+                                    <div class="simulated-nav-item">Porters</div>
+                                    <div class="simulated-nav-item">Forklift</div>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+                                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 15px;">
+                                        <div style="width: 40px; height: 40px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">JS</div>
+                                        <div>
+                                            <div style="font-weight: 600;">John Smith</div>
+                                            <div style="font-size: 12px; color: #666;">Supervisor</div>
+                                        </div>
+                                    </div>
+                                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 15px;">
+                                        <div style="width: 40px; height: 40px; background: var(--success-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">MD</div>
+                                        <div>
+                                            <div style="font-weight: 600;">Maria Diaz</div>
+                                            <div style="font-size: 12px; color: #666;">Porter</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="employee-management-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="employee-management-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Team Management Step -->
+            <div class="tutorial-step" id="team-management-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">7</span>
+                        <h2 class="step-title">Team Management</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>Teams are the foundation of efficient shift management in ShiftMaster . This section covers creating, managing, and optimizing teams.</p>
+                    
+                    <h3>Team Composition</h3>
+                    <p>A standard team consists of:</p>
+                    <ul>
+                        <li><strong>1 Staff Member</strong> - Primary team coordinator</li>
+                        <li><strong>2 Porters</strong> - Handle luggage and cargo movement</li>
+                        <li><strong>1 Forklift Operator</strong> - Certified equipment operator</li>
+                        <li><strong>Optional Supervisor</strong> - Team leader when needed</li>
+                    </ul>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-title">Team Requirements</div>
+                        <p>These requirements can be customized in Settings > Team Rules based on your organization's needs for different locations, areas, or shifts.</p>
+                    </div>
+                    
+                    <h3>Creating a Team</h3>
+                    <ol>
+                        <li>Navigate to the <strong>Shift Schedule</strong> section</li>
+                        <li>Select the date for the new team</li>
+                        <li>Click <strong>Add Team</strong></li>
+                        <li>Select the shift type (Morning or Night)</li>
+                        <li>Choose the location and area</li>
+                        <li>Add team members:
+                            <ul>
+                                <li>Select 1 Staff Member</li>
+                                <li>Select 2 Porters</li>
+                                <li>Select 1 Forklift Operator</li>
+                                <li>Optionally add a Supervisor</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save Team</strong></li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Team Creation Demo</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+                                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                    <h4 style="margin-top: 0;">Team Members</h4>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Staff Member (1 required)</label>
+                                        <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>Select Staff Member</option>
+                                            <option>John Smith (Staff)</option>
+                                            <option>Sarah Johnson (Staff)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Porters (2 required)</label>
+                                        <select multiple style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; height: auto;">
+                                            <option>Maria Diaz (Porter)</option>
+                                            <option>Ahmed Khan (Porter)</option>
+                                            <option>Lisa Wong (Porter)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Forklift Operator (1 required)</label>
+                                        <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>Select Forklift Operator</option>
+                                            <option>Robert Chen (Forklift)</option>
+                                            <option>Emma Wilson (Forklift)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Supervisor (optional)</label>
+                                        <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>No Supervisor</option>
+                                            <option>David Miller (Supervisor)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <button class="simulated-btn" style="width: 100%;">Save Team</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Viewing and Managing Teams</h3>
+                    <p>To view or edit existing teams:</p>
+                    <ol>
+                        <li>Navigate to the <strong>Teams</strong> section</li>
+                        <li>Use the date picker to select the desired date</li>
+                        <li>Apply filters if needed (Location, Area, Shift)</li>
+                        <li>Click on a team to view details</li>
+                        <li>Use the <strong>Edit</strong> button to make changes</li>
+                        <li>Click <strong>Delete</strong> to remove a team</li>
+                    </ol>
+                    
+                    <div class="video-placeholder">
+                         <video width="640" height="360" controls>
+  <source src="shift.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+                    </div>
+                    
+                    <h3>Team Rules</h3>
+                    <p>Team Rules allow you to define different team compositions for various scenarios:</p>
+                    <ul>
+                        <li>Different locations may require different team sizes</li>
+                        <li>Certain areas might need additional staff</li>
+                        <li>Night shifts could have different requirements than day shifts</li>
+                    </ul>
+                    
+                    <p>To create a Team Rule:</p>
+                    <ol>
+                        <li>Navigate to <strong>Settings > Team Rules</strong></li>
+                        <li>Click <strong>Add Rule</strong></li>
+                        <li>Define the criteria (Date, Location, Area, Shift)</li>
+                        <li>Set the required number of each role</li>
+                        <li>Save the rule</li>
+                    </ol>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="team-management-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="team-management-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Assignment Step -->
+            <div class="tutorial-step" id="assignment-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">8</span>
+                        <h2 class="step-title">Employee Assignments</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>The Assignments feature allows you to assign employees to specific shifts, locations, and areas before organizing them into teams.</p>
+                    
+                    <h3>Creating an Assignment</h3>
+                    <ol>
+                        <li>Navigate to the <strong>Assign</strong> section</li>
+                        <li>Select the assignment date</li>
+                        <li>Click <strong>Add Assignment</strong></li>
+                        <li>Fill in the assignment details:
+                            <ul>
+                                <li>Select the employee</li>
+                                <li>Choose the shift (Morning or Night)</li>
+                                <li>Select location and area</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save Assignment</strong></li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Create Assignment</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 500px; margin: 0 auto;">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Date</label>
+                                    <input type="date" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Employee</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>Select Employee</option>
+                                        <option>John Smith (Staff)</option>
+                                        <option>Maria Diaz (Porter)</option>
+                                        <option>Robert Chen (Forklift)</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Shift</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>Morning (6:00 AM - 6:00 PM)</option>
+                                        <option>Night (6:00 PM - 6:00 AM)</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Location</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>FG5</option>
+                                        <option>FG4</option>
+                                        <option>FG</option>
+                                        <option>FG2</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Area</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>Breakdown</option>
+                                        <option>Delivery</option>
+                                        <option>Acceptance</option>
+                                        <option>Buildup</option>
+                                    </select>
+                                </div>
+                                
+                                <button class="simulated-btn" style="width: 100%;">Save Assignment</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Bulk Assignments</h3>
+                    <p>For assigning multiple employees at once:</p>
+                    <ol>
+                        <li>Navigate to the <strong>Assign</strong> section</li>
+                        <li>Select the assignment date</li>
+                        <li>Click <strong>Bulk Assign</strong></li>
+                        <li>Select the shift, location, and area</li>
+                        <li>Choose multiple employees from the list</li>
+                        <li>Click <strong>Save Assignments</strong></li>
+                    </ol>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-title">Assignment vs. Team</div>
+                        <p><strong>Assignments</strong> indicate when and where an employee is scheduled to work, while <strong>Teams</strong> organize assigned employees into functional groups. Employees must be assigned before they can be added to teams.</p>
+                    </div>
+                    
+                    <h3>Viewing and Filtering Assignments</h3>
+                    <p>To view assignments:</p>
+                    <ol>
+                        <li>Navigate to the <strong>Assign</strong> section</li>
+                        <li>Select the date you want to view</li>
+                        <li>Use filters to narrow down by:
+                            <ul>
+                                <li>Location</li>
+                                <li>Area</li>
+                                <li>Shift type</li>
+                            </ul>
+                        </li>
+                        <li>Click on an assignment to view details</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Assignment Filters</div>
+                            <div class="demo-reset" id="reset-assignment-demo">Reset</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 800px; margin: 0 auto;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                                    <div>
+                                        <label style="display: block; margin-bottom: 5px; font-size: 12px;">Location</label>
+                                        <select style="padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>All Locations</option>
+                                            <option>FG5</option>
+                                            <option>FG4</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; margin-bottom: 5px; font-size: 12px;">Area</label>
+                                        <select style="padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>All Areas</option>
+                                            <option>Breakdown</option>
+                                            <option>Delivery</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; margin-bottom: 5px; font-size: 12px;">Shift</label>
+                                        <select style="padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>
+                                          <option>All Shifts</option>
+                                            <option>Morning</option>
+                                            <option>Night</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div style="background: #f9f9f9; border-radius: 8px; overflow: hidden;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; background: #eee; padding: 10px 15px; font-weight: 600;">
+                                        <div>Employee</div>
+                                        <div>Shift</div>
+                                        <div>Location</div>
+                                        <div>Area</div>
+                                    </div>
+                                    <div style="padding: 15px;">
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; padding: 10px 0; border-bottom: 1px solid #eee;">
+                                            <div>John Smith</div>
+                                            <div>Morning</div>
+                                            <div>FG5</div>
+                                            <div>Breakdown</div>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; padding: 10px 0; border-bottom: 1px solid #eee;">
+                                            <div>Maria Diaz</div>
+                                            <div>Morning</div>
+                                            <div>FG5</div>
+                                            <div>Breakdown</div>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; padding: 10px 0;">
+                                            <div>Robert Chen</div>
+                                            <div>Night</div>
+                                            <div>FG4</div>
+                                            <div>Delivery</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="assignment-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="assignment-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Auto Generation Step -->
+            <div class="tutorial-step" id="auto-generation-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">9</span>
+                        <h2 class="step-title">Auto Generation</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>ShiftMaster's Auto Generation feature helps you quickly create complete schedules based on your predefined rules and employee availability.</p>
+                    
+                    <h3>How Auto Generation Works</h3>
+                    <p>The system uses intelligent algorithms to:</p>
+                    <ul>
+                        <li>Distribute shifts fairly among employees</li>
+                        <li>Match employee skills with shift requirements</li>
+                        <li>Consider employee preferences and availability</li>
+                        <li>Ensure all team composition rules are followed</li>
+                        <li>Balance workload across locations and areas</li>
+                    </ul>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-title">Before You Generate</div>
+                        <p>For best results, ensure you have:</p>
+                        <ol>
+                            <li>All employees properly entered in the system</li>
+                            <li>Team rules configured for your locations and areas</li>
+                            <li>Employee availability up to date</li>
+                            <li>Any blackout dates or special requirements noted</li>
+                        </ol>
+                    </div>
+                    
+                    <h3>Running Auto Generation</h3>
+                    <ol>
+                        <li>Navigate to the <strong>Automation</strong> section</li>
+                        <li>Select the date range for generation</li>
+                        <li>Choose locations and areas to include</li>
+                        <li>Select shift types (Morning, Night, or both)</li>
+                        <li>Click <strong>Generate Schedule</strong></li>
+                        <li>Review the proposed schedule</li>
+                        <li>Click <strong>Apply Schedule</strong> to confirm</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Auto Generation Demo</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Date Range</label>
+                                    <div style="display: flex; gap: 10px;">
+                                        <input type="date" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <span style="display: flex; align-items: center;">to</span>
+                                        <input type="date" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Locations</label>
+                                    <select multiple style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; height: auto;">
+                                        <option selected>FG5</option>
+                                        <option selected>FG4</option>
+                                        <option>FG</option>
+                                        <option>FG2</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Shift Types</label>
+                                    <div style="display: flex; gap: 15px;">
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" checked> Morning
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" checked> Night
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Options</label>
+                                    <div style="display: flex; gap: 15px;">
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" checked> Respect availability
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" checked> Balance workload
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <button class="simulated-btn" style="width: 100%;">Generate Schedule</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Reviewing Generated Schedules</h3>
+                    <p>After generation, carefully review the proposed schedule:</p>
+                    <ul>
+                        <li>Check for any conflicts or unusual patterns</li>
+                        <li>Verify that all required roles are filled</li>
+                        <li>Ensure employee preferences were respected where possible</li>
+                        <li>Make manual adjustments if needed before applying</li>
+                    </ul>
+                    
+                    <div class="video-placeholder">
+                        
+                        <video width="900" height="400" controls>
+  <source src="auto.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+                    </div>
+                    
+                    <h3>Manual Adjustments</h3>
+                    <p>After auto-generation, you can still make manual changes:</p>
+                    <ol>
+                        <li>Navigate to the generated schedule</li>
+                        <li>Click on any shift to edit it</li>
+                        <li>Add, remove, or replace team members</li>
+                        <li>Save your changes</li>
+                    </ol>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="auto-generation-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="auto-generation-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Reports Step -->
+            <div class="tutorial-step" id="reports-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">10</span>
+                        <h2 class="step-title">Reports & Analysis</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>ShiftMaster provides comprehensive reporting tools to help you analyze workforce data and optimize your scheduling.</p>
+                    
+                    <h3>Available Reports</h3>
+                    <div class="simulated-app" style="margin: 20px 0;">
+                        <div class="simulated-header">
+                            ShiftMaster - Reports
+                        </div>
+                        <div class="simulated-content">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer;">
+                                    <div style="font-weight: 600; margin-bottom: 5px;">Shift Coverage</div>
+                                    <div style="font-size: 12px; color: #666;">View shift coverage by date and location</div>
+                                </div>
+                                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer;">
+                                    <div style="font-weight: 600; margin-bottom: 5px;">Employee Hours</div>
+                                    <div style="font-size: 12px; color: #666;">Track hours worked by employee</div>
+                                </div>
+                                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; cursor: pointer;">
+                                    <div style="font-weight: 600; margin-bottom: 5px;">Team Composition</div>
+                                    <div style="font-size: 12px; color: #666;">Analyze team structures over time</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Generating a Report</h3>
+                    <ol>
+                        <li>Navigate to the <strong>Reports</strong> section</li>
+                        <li>Select the report type you want to generate</li>
+                        <li>Set the date range for the report</li>
+                        <li>Apply any filters (location, area, shift type)</li>
+                        <li>Click <strong>Generate Report</strong></li>
+                        <li>View, print, or export the report as needed</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Report Generation</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Report Type</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>Shift Coverage</option>
+                                        <option>Employee Hours</option>
+                                        <option>Team Composition</option>
+                                        <option>Overtime Analysis</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Date Range</label>
+                                    <div style="display: flex; gap: 10px;">
+                                        <input type="date" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <span style="display: flex; align-items: center;">to</span>
+                                        <input type="date" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Filters</label>
+                                    <select multiple style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; height: auto;">
+                                        <option>All Locations</option>
+                                        <option>FG5</option>
+                                        <option>FG4</option>
+                                        <option>Morning Shift</option>
+                                        <option>Night Shift</option>
+                                    </select>
+                                </div>
+                                
+                                <button class="simulated-btn" style="width: 100%;">Generate Report</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Exporting Reports</h3>
+                    <p>All reports can be exported in multiple formats:</p>
+                    <ul>
+                        <li><strong>PDF:</strong> For printing or sharing</li>
+                        <li><strong>Excel:</strong> For further analysis</li>
+                        <li><strong>CSV:</strong> For importing into other systems</li>
+                    </ul>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-title">Scheduled Reports</div>
+                        <p>Set up reports to run automatically on a schedule (daily, weekly, or monthly) and be emailed to designated recipients.</p>
+                    </div>
+                    
+                    <h3>Analyzing Report Data</h3>
+                    <p>Use reports to:</p>
+                    <ul>
+                        <li>Identify staffing trends and patterns</li>
+                        <li>Monitor overtime and labor costs</li>
+                        <li>Track employee attendance and punctuality</li>
+                        <li>Evaluate team performance metrics</li>
+                        <li>Plan for future staffing needs</li>
+                    </ul>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="reports-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="reports-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Settings Step -->
+            <div class="tutorial-step" id="settings-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">11</span>
+                        <h2 class="step-title">System Settings</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>The Settings section allows you to customize ShiftMaster  to match your organization's specific needs and workflows.</p>
+                    
+                    <h3>Main Configuration Areas</h3>
+                    <div class="simulated-app" style="margin: 20px 0;">
+                        <div class="simulated-header">
+                            ShiftMaster  - Settings
+                        </div>
+                        <div class="simulated-content">
+                            <div style="display: flex; min-height: 400px;">
+                                <!-- Simulated Settings Sidebar -->
+                                <div style="width: 250px; background: #f5f7fa; border-right: 1px solid #ddd; padding: 15px 0;">
+                                    <div style="padding: 10px 15px; background: rgba(74, 137, 220, 0.1); color: var(--primary-color); border-left: 3px solid var(--primary-color);">
+                                        General Settings
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        Team Rules
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        Shift Types
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        Locations & Areas
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        User Permissions
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        Notifications
+                                    </div>
+                                    <div style="padding: 10px 15px;">
+                                        Integrations
+                                    </div>
+                                </div>
+                                
+                                <!-- Simulated Settings Content -->
+                                <div style="flex: 1; padding: 20px;">
+                                    <h3 style="margin-top: 0;">General Settings</h3>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: flex; align-items: center; gap: 10px;">
+                                            <input type="checkbox" checked> Enable shift reminders
+                                        </label>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: flex; align-items: center; gap: 10px;">
+                                            <input type="checkbox"> Require supervisor approval for shift changes
+                                        </label>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Default Shift Duration (hours)</label>
+                                        <input type="number" value="12" style="width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Schedule Start Day</label>
+                                        <select style="width: 200px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>Sunday</option>
+                                            <option>Monday</option>
+                                            <option selected>Tuesday</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <button class="simulated-btn">Save Settings</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Key Settings to Configure</h3>
+                    <div class="highlight-box">
+                        <div class="highlight-title">Essential Settings</div>
+                        <ul>
+                            <li><strong>Team Rules:</strong> Define standard team compositions for different scenarios</li>
+                            <li><strong>Shift Types:</strong> Configure your shift patterns and durations</li>
+                            <li><strong>Locations & Areas:</strong> Set up your physical locations and operational areas</li>
+                            <li><strong>User Permissions:</strong> Control access levels for different users</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Team Rules Configuration</h3>
+                    <p>Team rules determine how employees are organized into teams:</p>
+                    <ol>
+                        <li>Navigate to <strong>Settings > Team Rules</strong></li>
+                        <li>Click <strong>Add Rule</strong></li>
+                        <li>Define the criteria (date range, location, area, shift type)</li>
+                        <li>Set the required number of each role</li>
+                        <li>Save the rule</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Create Team Rule</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="width: 100%; max-width: 600px; margin: 0 auto;">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Rule Name</label>
+                                    <input type="text" placeholder="e.g., FG5 Morning Shift" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Applies To</label>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                        <select style="padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>All Locations</option>
+                                            <option>FG5</option>
+                                            <option>FG4</option>
+                                        </select>
+                                        <select style="padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                            <option>All Areas</option>
+                                            <option>Breakdown</option>
+                                            <option>Delivery</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Shift Type</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                        <option>All Shifts</option>
+                                        <option>Morning</option>
+                                        <option>Night</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                    <h4 style="margin-top: 0;">Required Roles</h4>
+                                    
+                                    <div style="margin-bottom: 10px;">
+                                        <label style="display: block; margin-bottom: 5px;">Staff Members</label>
+                                        <input type="number" value="1" min="0" style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 10px;">
+                                        <label style="display: block; margin-bottom: 5px;">Porters</label>
+                                        <input type="number" value="2" min="0" style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 10px;">
+                                        <label style="display: block; margin-bottom: 5px;">Forklift Operators</label>
+                                        <input type="number" value="1" min="0" style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; margin-bottom: 5px;">Supervisors</label>
+                                        <input type="number" value="0" min="0" style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    </div>
+                                </div>
+                                
+                                <button class="simulated-btn" style="width: 100%;">Save Team Rule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="settings-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="settings-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Best Practices Step -->
+            <div class="tutorial-step" id="best-practices-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">12</span>
+                        <h2 class="step-title">Best Practices</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>Following these best practices will help you get the most value from ShiftMaster and ensure smooth workforce management.</p>
+                    
+                    <h3>Scheduling Best Practices</h3>
+                    <div class="highlight-box">
+                        <div class="highlight-title">Effective Scheduling</div>
+                        <ul>
+                            <li><strong>Plan ahead:</strong> Create schedules at least one week in advance</li>
+                            <li><strong>Balance workload:</strong> Distribute shifts fairly among employees</li>
+                            <li><strong>Consider preferences:</strong> Accommodate employee availability when possible</li>
+                            <li><strong>Review patterns:</strong> Regularly analyze shift assignments for optimization</li>
+                            <li><strong>Communicate changes:</strong> Notify employees promptly of any schedule updates</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Team Composition Tips</h3>
+                    <ul>
+                        <li>Mix experienced and new team members for knowledge sharing</li>
+                        <li>Ensure proper coverage for all required roles</li>
+                        <li>Consider personality dynamics when forming teams</li>
+                        <li>Rotate team members periodically to build versatility</li>
+                        <li>Document any special team requirements in Team Rules</li>
+                    </ul>
+                    
+                    <h3>Employee Management</h3>
+                    <div class="simulated-card" style="margin: 15px 0;">
+                        <h4 style="margin-top: 0;">Keeping Employee Data Current</h4>
+                        <ul>
+                            <li>Regularly update contact information</li>
+                            <li>Maintain accurate role and certification records</li>
+                            <li>Track employee preferences and availability</li>
+                            <li>Document performance notes for reference</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Using Auto Generation Effectively</h3>
+                    <ol>
+                        <li>Ensure all employee data is up to date before generating</li>
+                        <li>Set comprehensive Team Rules for different scenarios</li>
+                        <li>Review generated schedules carefully before applying</li>
+                        <li>Make manual adjustments as needed for special cases</li>
+                        <li>Save frequently used configurations as templates</li>
+                    </ol>
+                    
+                    <div class="interactive-demo">
+                        <div class="demo-header">
+                            <div class="demo-title">Schedule Optimization</div>
+                        </div>
+                        <div class="demo-content">
+                            <div style="text-align: center;">
+                                <p>Use these techniques to improve your schedules:</p>
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 20px 0;">
+                                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; width: 200px;">
+                                        <div style="font-weight: 600; margin-bottom: 5px;">Shift Rotation</div>
+                                        <div style="font-size: 13px; color: #666;">Rotate employees between morning and night shifts</div>
+                                    </div>
+                                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; width: 200px;">
+                                        <div style="font-weight: 600; margin-bottom: 5px;">Skill Balancing</div>
+                                        <div style="font-size: 13px; color: #666;">Ensure each team has the right mix of skills</div>
+                                    </div>
+                                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; width: 200px;">
+                                        <div style="font-weight: 600; margin-bottom: 5px;">Cross-Training</div>
+                                        <div style="font-size: 13px; color: #666;">Schedule employees in different roles occasionally</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Reporting Insights</h3>
+                    <p>Regularly review these key reports to optimize your workforce management:</p>
+                    <ul>
+                        <li><strong>Overtime Analysis:</strong> Monitor and control overtime costs</li>
+                        <li><strong>Employee Hours:</strong> Ensure fair distribution of work hours</li>
+                        <li><strong>Shift Coverage:</strong> Identify gaps in your scheduling</li>
+                        <li><strong>Team Performance:</strong> Assess productivity by team</li>
+                    </ul>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="best-practices-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="best-practices-next">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quiz Step -->
+            <div class="tutorial-step" id="quiz-step">
+                <div class="step-header">
+                    <div>
+                        <span class="step-number">13</span>
+                        <h2 class="step-title">Knowledge Check</h2>
+                    </div>
+                </div>
+                
+                <div class="step-content">
+                    <p>Test your understanding of ShiftMaster  with this short quiz. Select the best answer for each question.</p>
+                    
+                    <div class="quiz-container">
+                        <div class="quiz-question">
+                            1. What is the standard composition of a team in ShiftMaster ?
+                        </div>
+                        <div class="quiz-options">
+                            <div class="quiz-option">
+                                <input type="radio" name="q1" id="q1a"> 
+                                <label for="q1a">1 Staff, 2 Porters, 1 Forklift Operator</label>
+                            </div>
+                            <div class="quiz-option">
+                                <input type="radio" name="q1" id="q1b"> 
+                                <label for="q1b">2 Staff, 2 Porters, 2 Forklift Operators</label>
+                            </div>
+                            <div class="quiz-option">
+                                <input type="radio" name="q1" id="q1c"> 
+                                <label for="q1c">1 Staff, 1 Porter, 1 Forklift Operator</label>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-question">
+                            2. Where do you configure different team compositions for different locations?
+                        </div>
+                        <div class="quiz-options">
+                            <div class="quiz-option">
+                                <input type="radio" name="q2" id="q2a"> 
+                                <label for="q2a">Employee Management</label>
+                            </div>
+                            <div class="quiz-option">
+                                <input type="radio" name="q2" id="q2b"> 
+                                <label for="q2b">Team Rules in Settings</label>
+                            </div>
+                            <div class="quiz-option">
+                                <input type="radio" name="q2" id="q2c"> 
+                                <label for="q2c">Shift Schedule</label>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-question">
+                            3. What should you do before running Auto Generation?
+                        </div>
+                        <div class="quiz-options">
+                            <div class="quiz-option">
+                                <input type="radio" name="q3" id="q3a"> 
+                                <label for="q3a">Ensure employee data is up to date</label>
+                            </div>
+                            <div class="quiz-option">
+                                <input type="radio" name="q3" id="q3b"> 
+                                <label for="q3b">Set Team Rules for different scenarios</label>
+                            </div>
+                            <div class="quiz-option">
+                                <input type="radio" name="q3" id="q3c"> 
+                                <label for="q3c">Both of the above</label>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-feedback" id="quiz-feedback">
+                            <!-- Feedback will appear here -->
+                        </div>
+                        
+                        <div style="padding: 15px; text-align: center;">
+                            <button class="quiz-submit" id="submit-quiz">Submit Answers</button>
+                        </div>
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-title">Need Help?</div>
+                        <p>If you're unsure about any answers, you can review previous sections of the tutorial using the sidebar navigation.</p>
+                    </div>
+                </div>
+                
+                <div class="step-actions">
+                    <button class="btn btn-outline" id="quiz-prev">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn btn-primary" id="quiz-next" disabled>
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Completion Step -->
+            <div class="tutorial-step" id="completion-step">
+                <div class="completion-screen">
+                    <div class="completion-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2 class="completion-title">Tutorial Complete!</h2>
+                    <p class="completion-text">
+                        Congratulations on completing the ShiftMaster tutorial! You're now ready to start managing your workforce efficiently. 
+                        Remember, you can revisit any section of this tutorial at any time if you need a refresher.
+                    </p>
+                    <button class="btn btn-primary" id="restart-tutorial">
+                        <i class="fas fa-sync-alt"></i> Restart Tutorial
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Progress Tracker -->
+        <div class="progress-tracker">
+            <div class="progress-circle" style="--progress: 8%">
+                <div class="progress-percent">8%</div>
+            </div>
+            <div class="progress-text">Tutorial Progress</div>
+        </div>
+        
+        <!-- Speech Controls -->
+        <div class="speech-controls">
+            <select class="voice-select" id="voice-select">
+                <option>Default Voice</option>
+            </select>
+            <button class="speech-btn" id="play-audio">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="speech-btn stop" id="stop-audio" style="display: none;">
+                <i class="fas fa-stop"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const tutorialSteps = document.querySelectorAll('.tutorial-step');
+        const prevButtons = document.querySelectorAll('[id$="-prev"]');
+        const nextButtons = document.querySelectorAll('[id$="-next"]');
+        const stepTitle = document.getElementById('step-title');
+        const progressCircle = document.querySelector('.progress-circle');
+        const progressPercent = document.querySelector('.progress-percent');
+        const quizOptions = document.querySelectorAll('.quiz-option');
+        const quizSubmit = document.getElementById('submit-quiz');
+        const quizNext = document.getElementById('quiz-next');
+        const quizFeedback = document.getElementById('quiz-feedback');
+        const restartTutorial = document.getElementById('restart-tutorial');
+        
+        // Voice Reader Elements
+        const voiceReaderPlay = document.getElementById('voice-reader-play');
+        const voiceReaderPause = document.getElementById('voice-reader-pause');
+        const voiceReaderStop = document.getElementById('voice-reader-stop');
+        const voiceReaderSpeed = document.getElementById('voice-reader-speed');
+        
+        // Speech Synthesis
+        const synth = window.speechSynthesis;
+        let currentUtterance = null;
+        let isReading = false;
+        
+        // Current step tracking
+        let currentStep = 0;
+        const totalSteps = tutorialSteps.length;
+        
+        // Initialize tutorial
+        function initTutorial() {
+            // Set up sidebar toggle
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            mobileSidebarToggle.addEventListener('click', toggleSidebar);
+            
+            // Set up menu item clicks
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const stepId = item.getAttribute('data-step');
+                    goToStep(stepId);
+                    if (window.innerWidth < 992) toggleSidebar();
+                });
+            });
+            
+            // Set up navigation buttons
+            prevButtons.forEach(btn => {
+                btn.addEventListener('click', prevStep);
+            });
+            
+            nextButtons.forEach(btn => {
+                btn.addEventListener('click', nextStep);
+            });
+            
+            // Set up quiz interactions
+            quizOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    quizOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            quizSubmit.addEventListener('click', checkQuizAnswers);
+            restartTutorial.addEventListener('click', restartTutorialFn);
+            
+            // Set up voice reader controls
+            voiceReaderPlay.addEventListener('click', startReading);
+            voiceReaderPause.addEventListener('click', pauseReading);
+            voiceReaderStop.addEventListener('click', stopReading);
+            voiceReaderSpeed.addEventListener('change', updateReadingSpeed);
+            
+            // Initialize first step
+            updateProgress();
+        }
+        
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+        }
+        
+        // Navigate to a specific step
+        function goToStep(stepId) {
+            // Stop any current reading
+            stopReading();
+            
+            // Hide all steps
+            tutorialSteps.forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Deactivate all menu items
+            menuItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected step
+            const stepElement = document.getElementById(`${stepId}-step`);
+            if (stepElement) {
+                stepElement.classList.add('active');
+                
+                // Find and activate corresponding menu item
+                const menuItem = document.querySelector(`.menu-item[data-step="${stepId}"]`);
+                if (menuItem) {
+                    menuItem.classList.add('active');
+                }
+                
+                // Update current step index
+                currentStep = Array.from(tutorialSteps).indexOf(stepElement);
+                
+                // Update header title
+                const titleElement = stepElement.querySelector('.step-title');
+                if (titleElement) {
+                    stepTitle.textContent = titleElement.textContent;
+                }
+                
+                // Update progress
+                updateProgress();
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+        }
+        
+        // Go to next step
+        function nextStep() {
+            if (currentStep < totalSteps - 1) {
+                const nextStepId = tutorialSteps[currentStep + 1].id.replace('-step', '');
+                goToStep(nextStepId);
+            }
+        }
+        
+        // Go to previous step
+        function prevStep() {
+            if (currentStep > 0) {
+                const prevStepId = tutorialSteps[currentStep - 1].id.replace('-step', '');
+                goToStep(prevStepId);
+            }
+        }
+        
+        // Update progress tracker
+        function updateProgress() {
+            const progress = Math.round((currentStep + 1) / totalSteps * 100);
+            progressCircle.style.setProperty('--progress', `${progress}%`);
+            progressPercent.textContent = `${progress}%`;
+        }
+        
+        // Check quiz answers
+        function checkQuizAnswers() {
+            // Get selected answers
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            
+            if (!q1 || !q2 || !q3) {
+                quizFeedback.textContent = 'Please answer all questions before submitting.';
+                quizFeedback.classList.add('show');
+                return;
+            }
+            
+            // Check answers (correct answers are 1a, 2b, 3c)
+            let score = 0;
+            const answers = [
+                q1.id === 'q1a',
+                q2.id === 'q2b',
+                q3.id === 'q3c'
+            ];
+            
+            // Highlight correct/incorrect answers
+            document.querySelectorAll('.quiz-option').forEach((option, index) => {
+                option.classList.remove('correct', 'incorrect');
+                
+                const radio = option.querySelector('input[type="radio"]');
+                if (radio) {
+                    const questionNum = radio.name.substring(1);
+                    const isCorrect = answers[questionNum - 1] && radio.id === `q${questionNum}a` || 
+                                      answers[questionNum - 1] && radio.id === `q${questionNum}b` || 
+                                      answers[questionNum - 1] && radio.id === `q${questionNum}c`;
+                    
+                    if (radio.checked) {
+                        option.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        if (isCorrect) score++;
+                    } else if (isCorrect) {
+                        option.classList.add('correct');
+                    }
+                }
+            });
+            
+            // Show feedback
+            quizFeedback.innerHTML = `
+                <strong>You scored ${score} out of 3.</strong><br>
+                ${score === 3 ? 'Perfect! You\'re ready to use ShiftMaster.' : 
+                 'Review the incorrect answers and try again.'}
+            `;
+            quizFeedback.classList.add('show');
+            
+            // Enable next button if all answers are correct
+            if (score === 3) {
+                quizNext.disabled = false;
+            }
+        }
+        
+        // Restart tutorial
+        function restartTutorialFn() {
+            goToStep('welcome');
+        }
+        
+        // Voice Reader Functions
+        function startReading() {
+            if (isReading) return;
+            
+            const activeStep = document.querySelector('.tutorial-step.active');
+            if (!activeStep) return;
+            
+            // Get all text content from the active step
+            const textElements = activeStep.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li');
+            let fullText = '';
+            
+            textElements.forEach(el => {
+                fullText += el.textContent + '\n';
+            });
+            
+            // Create and configure the utterance
+            currentUtterance = new SpeechSynthesisUtterance(fullText);
+            currentUtterance.rate = parseFloat(voiceReaderSpeed.value);
+            currentUtterance.lang = 'en-US';
+            
+            // Event handlers
+            currentUtterance.onstart = () => {
+                isReading = true;
+                voiceReaderPlay.classList.add('active');
+                voiceReaderPause.classList.remove('active');
+            };
+            
+            currentUtterance.onend = () => {
+                isReading = false;
+                voiceReaderPlay.classList.remove('active');
+            };
+            
+            currentUtterance.onpause = () => {
+                isReading = false;
+                voiceReaderPause.classList.add('active');
+                voiceReaderPlay.classList.remove('active');
+            };
+            
+            currentUtterance.onresume = () => {
+                isReading = true;
+                voiceReaderPlay.classList.add('active');
+                voiceReaderPause.classList.remove('active');
+            };
+            
+            // Start reading
+            synth.speak(currentUtterance);
+        }
+        
+        function pauseReading() {
+            if (isReading && synth.speaking) {
+                synth.pause();
+            }
+        }
+        
+        function stopReading() {
+            synth.cancel();
+            isReading = false;
+            voiceReaderPlay.classList.remove('active');
+            voiceReaderPause.classList.remove('active');
+        }
+        
+        function updateReadingSpeed() {
+            if (currentUtterance && isReading) {
+                currentUtterance.rate = parseFloat(voiceReaderSpeed.value);
+                synth.pause();
+                synth.resume();
+            }
+        }
+        
+        // Initialize the tutorial when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initTutorial);
+    </script>
+</body>
+</html>
